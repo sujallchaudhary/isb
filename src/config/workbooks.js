@@ -1,0 +1,7 @@
+const WORKBOOKS = {
+  CLASS_INFO: '1YH9Zc3icnhKW5Iw4_q3jBXoNUJXOzNG8S1cO4I92_Yk',
+  TERM_TIMETABLE: '1wLLVfZKq5NpTwsE8uRMVZ5nDeqSvk17_N-9eia0zuVE',
+  PROF_INFO: '1it-S3MCyBVCSvdocHD9tGHclFG9pkcy0zjDYxnwHFmE',
+};
+
+module.exports = WORKBOOKS;
