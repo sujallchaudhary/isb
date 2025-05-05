@@ -82,23 +82,47 @@ const handleSeatingSubject = async (sock, from, command, state) => {
 };
 
 const handleOfficeProf = async (sock, from, command, state) => {
-  const officeProfIndex = parseInt(command) - 1;
-  if (officeProfIndex >= 0 && officeProfIndex < state.professors.length) {
-    const selectedProf = state.professors[officeProfIndex];
-    const result = await getOfficeHours(state.subject, selectedProf);
-    
-    if (result.success) {
-      await sock.sendMessage(from, { 
-        text: `Office Hours for ${selectedProf}: ${result.data}\n\n0. Back to Main Menu` 
-      });
+  // For direct selection from office_term state
+  if (state.state === 'office_prof' && state.selectedTerm) {
+    const officeProfIndex = parseInt(command) - 1;
+    if (officeProfIndex >= 0 && officeProfIndex < state.professors.length) {
+      const selectedProf = state.professors[officeProfIndex];
+      const result = await getOfficeHours(state.selectedTerm, selectedProf);
+      
+      if (result.success) {
+        await sock.sendMessage(from, { 
+          text: `Office Hours for ${selectedProf}: ${result.data}\n\n0. Back to Main Menu` 
+        });
+      } else {
+        await sock.sendMessage(from, { text: result.message });
+        setTimeout(() => sendMainMenu(sock, from), 1000);
+      }
+    } else if (command === '0') {
+      return sendMainMenu(sock, from);
     } else {
-      await sock.sendMessage(from, { text: result.message });
-      setTimeout(() => sendMainMenu(sock, from), 1000);
+      await handleInvalidInput(sock, from);
     }
-  } else if (command === '0') {
-    return sendMainMenu(sock, from);
-  } else {
-    await handleInvalidInput(sock, from);
+  } 
+  // For the original flow (backward compatibility)
+  else {
+    const officeProfIndex = parseInt(command) - 1;
+    if (officeProfIndex >= 0 && officeProfIndex < state.professors.length) {
+      const selectedProf = state.professors[officeProfIndex];
+      const result = await getOfficeHours(state.subject, selectedProf);
+      
+      if (result.success) {
+        await sock.sendMessage(from, { 
+          text: `Office Hours for ${selectedProf}: ${result.data}\n\n0. Back to Main Menu` 
+        });
+      } else {
+        await sock.sendMessage(from, { text: result.message });
+        setTimeout(() => sendMainMenu(sock, from), 1000);
+      }
+    } else if (command === '0') {
+      return sendMainMenu(sock, from);
+    } else {
+      await handleInvalidInput(sock, from);
+    }
   }
 };
 
@@ -180,10 +204,9 @@ const handleMessage = async (sock, from, messageText) => {
       } else if (command === '3') {
         await sendSectionMenu(sock, from, 'seating_section');
       } else if (command === '4') {
-        await sendTermMenu(sock, from);
+        await sendTermMenu(sock, from,'term_menu');
       } else if (command === '5') {
-        await sock.sendMessage(from, { text: "Select your subject buddy:\n\n1. WACM\n2. FADM\n3. LSAT\n4. SMDM\n5. MGEC\n\nNumeric input like above: 1 or 2 or 3 so on.." });
-        setConversationState(from, { state: 'office_subject' });
+        await sendTermMenu(sock, from,'office_term');
       } else if (command === '6') {
         await sock.sendMessage(from, { text: "Select your subject buddy:\n\n1. WACM\n2. FADM\n3. LSAT\n4. SMDM\n5. MGEC\n\nNumeric input like above: 1 or 2 or 3 so on.." });
         setConversationState(from, { state: 'tut_subject' });
@@ -197,6 +220,16 @@ const handleMessage = async (sock, from, messageText) => {
       if (termIndex >= 0 && termIndex < TERMS.length) {
         const selectedTerm = TERMS[termIndex];
         await sendSectionMenu(sock, from, 'term_section', { selectedTerm });
+      } else {
+        await handleInvalidInput(sock, from);
+      }
+      break;
+      
+    case 'office_term':
+      const officeTermIndex = parseInt(command) - 1;
+      if (officeTermIndex >= 0 && officeTermIndex < TERMS.length) {
+        const selectedTerm = TERMS[officeTermIndex];
+        await sendProfMenu(sock, from, selectedTerm, 'office_prof', { selectedTerm });
       } else {
         await handleInvalidInput(sock, from);
       }

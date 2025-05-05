@@ -146,15 +146,15 @@ const getTermTimetable = async (term, section) => {
   }
 };
 
-const getOfficeHours = async (subject, professor) => {
+const getOfficeHours = async (term, professor) => {
   try {
-    const data = await extractData(WORKBOOKS.PROF_INFO, subject);
-    if (!data || data.length <= 1) {
+    const data = await extractData(WORKBOOKS.PROF_INFO, term);
+    if (data.length === 0) {
       return { success: false, message: 'Office hours information not found.' };
     }
     
     const headerRow = data[0];
-    const profIndex = headerRow.findIndex(col => col.toLowerCase() === 'prof');
+    const profIndex = headerRow.findIndex(col => col.toLowerCase() === 'professor');
     const officeHoursIndex = headerRow.findIndex(col => 
       col.toLowerCase() === 'office hours' ||
       col.toLowerCase() === 'officehours'
@@ -168,7 +168,7 @@ const getOfficeHours = async (subject, professor) => {
     if (profRow && profRow[officeHoursIndex]) {
       return { success: true, data: profRow[officeHoursIndex] };
     } else {
-      return { success: false, message: `Office hours not found for ${professor}.` };
+      return { success: false, message: `Office hours not found for ${professor} in ${term}.` };
     }
   } catch (error) {
     console.error('Error fetching office hours:', error);
@@ -184,11 +184,8 @@ const getTutorialTimings = async (subject, professor) => {
     }
     
     const headerRow = data[0];
-    const profIndex = headerRow.findIndex(col => col.toLowerCase() === 'prof');
-    const tutTimingsIndex = headerRow.findIndex(col => 
-      col.toLowerCase() === 'tut timings' ||
-      col.toLowerCase() === 'tuttimings'
-    );
+    const profIndex = headerRow.findIndex(col => col.toLowerCase() === 'professor');
+    const tutTimingsIndex = headerRow.findIndex(col => col.toLowerCase() === 'tut');
     
     if (profIndex === -1 || tutTimingsIndex === -1) {
       return { success: false, message: 'Tutorial timing information not properly formatted.' };

@@ -29,7 +29,7 @@ const sendSectionMenu = async (sock, from, nextState, contextData = {}) => {
   setConversationState(from, { state: nextState, ...contextData });
 };
 
-const sendTermMenu = async (sock, from) => {
+const sendTermMenu = async (sock, from,next) => {
   let messageContent = "Select your term buddy:\n\n";
   
   for (let i = 0; i < TERMS.length; i++) {
@@ -38,7 +38,7 @@ const sendTermMenu = async (sock, from) => {
   messageContent += "\nNumeric input like above: 1 or 2 or 3 so on..";
 
   await sock.sendMessage(from, { text: messageContent });
-  setConversationState(from, { state: 'term_menu' });
+  setConversationState(from, { state: next });
 };
 
 const sendSubjectMenu = async (sock, from, section, nextState) => {
@@ -82,13 +82,13 @@ const sendProfMenu = async (sock, from, subject, nextState) => {
   try {
     const data = await extractData(WORKBOOKS.PROF_INFO, subject);
     
-    if (!data || data.length <= 1) {
+    if (data.length === 0) {
       await sock.sendMessage(from, { text: 'No professors found for this subject.' });
       return sendMainMenu(sock, from);
     }
 
     const headerRow = data[0];
-    const profIndex = headerRow.findIndex(col => col.toLowerCase() === 'prof');
+    const profIndex = headerRow.findIndex(col => col.toLowerCase() === 'professor');
     
     if (profIndex === -1) {
       await sock.sendMessage(from, { text: 'Professor information not found in the sheet.' });

@@ -19,13 +19,12 @@ const extractData = async (workbookId, sheetName, forceRefresh = false) => {
       range: sheetName,
     });
     setCachedData(cacheKey, response.data.values);
-    
+
     return response.data.values;
   } catch (error) {
-    console.error(`Error extracting data from ${sheetName}:`, error);
+    console.error(`Error fetching data from ${workbookId} - ${sheetName}`);
     
     if (getCachedData(cacheKey)) {
-      console.log(`Using stale cached data for ${sheetName} due to error`);
       return getCachedData(cacheKey);
     }
     
@@ -33,7 +32,7 @@ const extractData = async (workbookId, sheetName, forceRefresh = false) => {
   }
 };
 
-const preloadAllData = async (terms, sections, subjects) => {
+const preloadAllData = async (terms, sections) => {
   try {
     for (const term of terms) {
       await extractData(WORKBOOKS.TERM_TIMETABLE, term, true);
@@ -41,8 +40,8 @@ const preloadAllData = async (terms, sections, subjects) => {
     for (const section of sections) {
       await extractData(WORKBOOKS.CLASS_INFO, section, true);
     }
-    for (const subject of subjects) {
-      await extractData(WORKBOOKS.PROF_INFO, subject, true);
+    for (const term of terms) {
+      await extractData(WORKBOOKS.PROF_INFO, term, true);
     }
   } catch (error) {
     console.error("Error preloading data:", error);
