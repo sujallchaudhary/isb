@@ -6,6 +6,7 @@ const { handleMessage } = require('./src/handlers/messageHandler');
 const { preloadAllData } = require('./src/services/sheets');
 const { CACHE_REFRESH_INTERVAL, SECTIONS, TERMS, DEFAULT_SUBJECTS } = require('./src/config/constants');
 const { ensureDirectoryExists } = require('./src/utils/helpers');
+const { removeIdleUsers, IDLE_TIMEOUT } = require('./src/models/conversation');
 
 async function startBot() {
   const { state, saveCreds } = await useMultiFileAuthState(path.join(__dirname, 'auth_info'));
@@ -23,6 +24,7 @@ async function startBot() {
       console.log('Connected!');
       preloadAllData(TERMS, SECTIONS, DEFAULT_SUBJECTS);
       setupCacheRefreshTimer();
+      setupIdleUserCleanupTimer();
     }
     if (connection === 'close') startBot();
   });
@@ -46,6 +48,13 @@ const setupCacheRefreshTimer = () => {
     console.log("Refreshing data cache...");
     await preloadAllData(TERMS, SECTIONS, DEFAULT_SUBJECTS);
   }, CACHE_REFRESH_INTERVAL);
+};
+
+const setupIdleUserCleanupTimer = () => {
+  const checkInterval = Math.min(IDLE_TIMEOUT / 2, 60000);
+  setInterval(() => {
+    removeIdleUsers();
+  }, checkInterval);
 };
 
 // Create directories if they don't exist
