@@ -191,7 +191,7 @@ const handleMessage = async (sock, from, messageText) => {
         await sendMainMenu(sock, from);
       } else {
         await sock.sendMessage(from, { 
-          text: "Hello! I'm your class information assistant. Type 'hi' or 'menu' to get started!" 
+          text: "Hello! I'm your Mo'Town Buddy 🎓An information assistant! Type 'hi' or 'menu' to get started!" 
         });
       }
       break;
