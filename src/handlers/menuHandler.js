@@ -10,7 +10,7 @@ const sendMainMenu = async (sock, from) => {
   messageContent += "3. Seating Plan for Class\n";
   messageContent += "4. Term Timetable\n";
   messageContent += "5. Exam Schedule\n";
-  messageContent += "6. Prof Office Hours\n";
+  messageContent += "6. Prof Office Location\n";
   messageContent += "7. Tut Timings\n\n";
   messageContent += "Numeric input like above: 1 or 2 or 3 and so on..🔢";
 
