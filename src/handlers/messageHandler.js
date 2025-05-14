@@ -4,6 +4,7 @@ const { getConversationState, setConversationState } = require('../models/conver
 const { SECTIONS, DEFAULT_SUBJECTS, TERMS } = require('../config/constants');
 const {sendMainMenu,sendSectionMenu,sendTermMenu,sendSubjectMenu,sendProfMenu} = require('./menuHandler');
 const {getVenueInfo,getClassTimeInfo,getSeatingPlan,getTermTimetable,getOfficeHours,getTutorialTimings} = require('./dataHandler');
+const { send } = require('process');
 
 const handleInvalidInput = async (sock, from) => {
   await sock.sendMessage(from, { 
@@ -211,6 +212,9 @@ const handleMessage = async (sock, from, messageText) => {
         image: { url: "https://sdrive.blr1.cdn.digitaloceanspaces.com/files/c250f754f0a45e0eba1e7ca4e067af02.jpg" },
         caption: `Term 1 Mid Exam Schedule.` 
       });
+      setTimeout(() => {
+        sendMainMenu(sock, from);
+      }, 500);
       }
        else if (command === '6') {
         await sendTermMenu(sock, from,'office_term');
