@@ -9,8 +9,9 @@ const sendMainMenu = async (sock, from) => {
   messageContent += "2. When is my class\n";
   messageContent += "3. Seating Plan for Class\n";
   messageContent += "4. Term Timetable\n";
-  messageContent += "5. Prof Office Hours\n";
-  messageContent += "6. Tut Timings\n\n";
+  messageContent += "5. Exam Schedule\n";
+  messageContent += "6. Prof Office Hours\n";
+  messageContent += "7. Tut Timings\n\n";
   messageContent += "Numeric input like above: 1 or 2 or 3 and so on..🔢";
 
   await sock.sendMessage(from, { text: messageContent });

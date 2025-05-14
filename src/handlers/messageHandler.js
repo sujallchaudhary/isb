@@ -205,9 +205,16 @@ const handleMessage = async (sock, from, messageText) => {
         await sendSectionMenu(sock, from, 'seating_section');
       } else if (command === '4') {
         await sendTermMenu(sock, from,'term_menu');
-      } else if (command === '5') {
+      }
+      else if (command === '5') { 
+        await sock.sendMessage(from, { 
+        image: { url: "https://sdrive.blr1.cdn.digitaloceanspaces.com/files/c250f754f0a45e0eba1e7ca4e067af02.jpg" },
+        caption: `Term 1 Mid Exam Schedule.` 
+      });
+      }
+       else if (command === '6') {
         await sendTermMenu(sock, from,'office_term');
-      } else if (command === '6') {
+      } else if (command === '7') {
         await sock.sendMessage(from, { text: "No upcoming tut! 🤓\nContact the AA to update tut timings." });
         setTimeout(() => sendMainMenu(sock, from), 1000);
       } else {
