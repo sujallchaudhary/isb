@@ -4,38 +4,38 @@ const { extractData } = require('../services/sheets');
 const WORKBOOKS = require('../config/workbooks');
 
 const sendMainMenu = async (sock, from) => {
-  let messageContent = "Hey Buddy! 😎 How can I help you today?\n\n";
+  let messageContent = "Hey Buddy! 😎🎓 How can I help you today?\n\n";
   messageContent += "1. Where is my class\n";
   messageContent += "2. When is my class\n";
   messageContent += "3. Seating Plan for Class\n";
   messageContent += "4. Term Timetable\n";
-  messageContent += "5. Office Hours of my prof\n";
-  messageContent += "6. Tut timings of my subject\n\n";
-  messageContent += "Please Insert Number as input: Example 1 or 2 or 3 so on..";
+  messageContent += "5. Prof Office Hours\n";
+  messageContent += "6. Tut Timings\n\n";
+  messageContent += "Numeric input like above: 1 or 2 or 3 and so on..🔢";
 
   await sock.sendMessage(from, { text: messageContent });
   setConversationState(from, { state: 'main_menu' });
 };
 
 const sendSectionMenu = async (sock, from, nextState, contextData = {}) => {
-  let messageContent = "Select your section buddy:\n\n";
+  let messageContent = "Select your section buddy 🏫\n\n";
   
   for (let i = 0; i < SECTIONS.length; i++) {
     messageContent += `${i + 1}. ${SECTIONS[i]}\n`;
   }
-  messageContent += "\nNumeric input like above: 1 or 2 or 3 so on..";
+  messageContent += "\nNumeric input like above: 1 or 2 or 3 and so on..🔢";
 
   await sock.sendMessage(from, { text: messageContent });
   setConversationState(from, { state: nextState, ...contextData });
 };
 
 const sendTermMenu = async (sock, from,next) => {
-  let messageContent = "Select your term buddy:\n\n";
+  let messageContent = "Select your term buddy: 📆\n\n";
   
   for (let i = 0; i < TERMS.length; i++) {
     messageContent += `${i + 1}. ${TERMS[i]}\n`;
   }
-  messageContent += "\nNumeric input like above: 1 or 2 or 3 so on..";
+  messageContent += "\nNumeric input like above: 1 or 2 or 3 and so on..🔢";
 
   await sock.sendMessage(from, { text: messageContent });
   setConversationState(from, { state: next });
@@ -58,11 +58,11 @@ const sendSubjectMenu = async (sock, from, section, nextState) => {
     const allSubjects = data.slice(1).map(row => row[subjectIndex]).filter(Boolean);
     const subjects = [...new Set(allSubjects)];
     
-    let messageContent = "Select your subject:\n\n";
+    let messageContent = "Select your subject: 📚\n\n";
     for (let i = 0; i < subjects.length; i++) {
       messageContent += `${i + 1}. ${subjects[i]}\n`;
     }
-    messageContent += "\nNumeric input like above: 1 or 2 or 3 so on..";
+    messageContent += "\nNumeric input like above: 1 or 2 or 3 and so on..🔢";
     messageContent += "\n\n0. Back to Main Menu";
 
     await sock.sendMessage(from, { text: messageContent });
@@ -97,11 +97,11 @@ const sendProfMenu = async (sock, from, subject, nextState) => {
 
     const professors = data.slice(1).map(row => row[profIndex]).filter(Boolean);
     
-    let messageContent = "Select your prof:\n\n";
+    let messageContent = "Select your prof: 👩‍🏫\n\n";
     for (let i = 0; i < professors.length; i++) {
       messageContent += `${i + 1}. ${professors[i]}\n`;
     }
-    messageContent += "\nNumeric input like above: 1 or 2 or 3 so on..";
+    messageContent += "\nNumeric input like above: 1 or 2 or 3 and so on..🔢";
     messageContent += "\n\n0. Back to Main Menu";
 
     await sock.sendMessage(from, { text: messageContent });

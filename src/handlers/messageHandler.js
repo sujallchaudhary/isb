@@ -208,8 +208,8 @@ const handleMessage = async (sock, from, messageText) => {
       } else if (command === '5') {
         await sendTermMenu(sock, from,'office_term');
       } else if (command === '6') {
-        await sock.sendMessage(from, { text: "Select your subject buddy:\n\n1. WACM\n2. FADM\n3. LSAT\n4. SMDM\n5. MGEC\n\nNumeric input like above: 1 or 2 or 3 so on.." });
-        setConversationState(from, { state: 'tut_subject' });
+        await sock.sendMessage(from, { text: "No upcoming tut! 🤓\nContact the AA to update tut timings." });
+        setTimeout(() => sendMainMenu(sock, from), 1000);
       } else {
         await handleInvalidInput(sock, from);
       }

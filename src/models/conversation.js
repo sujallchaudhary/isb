@@ -1,5 +1,5 @@
 const conversationStates = new Map();
-const IDLE_TIMEOUT = 2 * 60 * 1000; // 5 minutes in milliseconds
+const IDLE_TIMEOUT = 5 * 60 * 1000;
 
 const getConversationState = (userId) => {
   return conversationStates.get(userId) || { state: 'initial' };
