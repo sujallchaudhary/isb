@@ -87,7 +87,7 @@ const getSeatingPlan = async (section, subject) => {
     const subjectRow = data.slice(1).find(row => row[subjectIndex] === subject);
     if (subjectRow && subjectRow[seatingPlanIndex]) {
       const imageUrl = subjectRow[seatingPlanIndex];
-      const imagePath = path.join(__dirname, '..', '..', 'temp', `seating_${subject}.jpg`);
+      const imagePath = path.join(__dirname, '..', '..', 'temp', `seating_${section}_${subject}.jpg`);
       
       try {
         fs.mkdirSync(path.dirname(imagePath), { recursive: true });
