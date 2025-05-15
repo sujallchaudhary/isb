@@ -1,7 +1,4 @@
-const fs = require('fs');
-const path = require('path');
 const { extractData } = require('../services/sheets');
-const { downloadImage } = require('../services/image');
 const WORKBOOKS = require('../config/workbooks');
 
 const getVenueInfo = async (section, subject) => {
@@ -87,16 +84,7 @@ const getSeatingPlan = async (section, subject) => {
     const subjectRow = data.slice(1).find(row => row[subjectIndex] === subject);
     if (subjectRow && subjectRow[seatingPlanIndex]) {
       const imageUrl = subjectRow[seatingPlanIndex];
-      const imagePath = path.join(__dirname, '..', '..', 'temp', `seating_${section}_${subject}.jpg`);
-      
-      try {
-        fs.mkdirSync(path.dirname(imagePath), { recursive: true });
-        await downloadImage(imageUrl, imagePath);
-        return { success: true, data: imagePath };
-      } catch (imageError) {
-        console.error('Error downloading seating plan image:', imageError);
-        return { success: false, message: 'Error downloading seating plan image.' };
-      }
+        return { success: true, data: imageUrl};
     } else {
       return { success: false, message: `Seating plan not found for ${subject}.` };
     }
@@ -105,6 +93,11 @@ const getSeatingPlan = async (section, subject) => {
     return { success: false, message: 'Error retrieving seating plan information.' };
   }
 };
+
+const getExamSchedule = async ()=>{
+  const imageUrl = "https://sdrive.blr1.cdn.digitaloceanspaces.com/files/f40c13370969318da4f44e5e74fe568a.jpg";
+    return { success: true, data: imageUrl };
+}
 
 const getTermTimetable = async (term, section) => {
   try {
@@ -127,16 +120,7 @@ const getTermTimetable = async (term, section) => {
     
     if (sectionRow && sectionRow[timetableIndex]) {
       const imageUrl = sectionRow[timetableIndex];
-      const imagePath = path.join(__dirname, '..', '..', 'temp', `timetable_${term}_${section}.jpg`);
-      
-      try {
-        fs.mkdirSync(path.dirname(imagePath), { recursive: true });
-        await downloadImage(imageUrl, imagePath);
-        return { success: true, data: imagePath };
-      } catch (imageError) {
-        console.error('Error downloading timetable image:', imageError);
-        return { success: false, message: 'Error downloading timetable image.' };
-      }
+        return { success: true, data: imageUrl };
     } else {
       return { success: false, message: `Timetable image not found for ${section} in ${term}.` };
     }
@@ -209,5 +193,6 @@ module.exports = {
   getSeatingPlan,
   getTermTimetable,
   getOfficeHours,
-  getTutorialTimings
+  getTutorialTimings,
+  getExamSchedule
 };

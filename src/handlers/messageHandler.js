@@ -1,10 +1,7 @@
-const fs = require('fs');
-const path = require('path');
-const { getConversationState, setConversationState } = require('../models/conversation');
+const { getConversationState} = require('../models/conversation');
 const { SECTIONS, DEFAULT_SUBJECTS, TERMS } = require('../config/constants');
 const {sendMainMenu,sendSectionMenu,sendTermMenu,sendSubjectMenu,sendProfMenu} = require('./menuHandler');
-const {getVenueInfo,getClassTimeInfo,getSeatingPlan,getTermTimetable,getOfficeHours,getTutorialTimings} = require('./dataHandler');
-const { send } = require('process');
+const {getVenueInfo,getClassTimeInfo,getSeatingPlan,getTermTimetable,getOfficeHours,getTutorialTimings,getExamSchedule} = require('./dataHandler');
 
 const handleInvalidInput = async (sock, from) => {
   await sock.sendMessage(from, { 
@@ -65,12 +62,8 @@ const handleSeatingSubject = async (sock, from, command, state) => {
     
     if (result.success) {
       await sock.sendMessage(from, { 
-        image: { url: result.data },
-        caption: `Seating Plan for ${selectedSubject}` 
+        text: `Seating plan for ${selectedSubject}:\n\n${result.data}\n\n0. Back to Main Menu`
       });
-      setTimeout(() => {
-        sock.sendMessage(from, { text: "0. Back to Main Menu" });
-      }, 500);
     } else {
       await sock.sendMessage(from, { text: result.message });
       setTimeout(() => sendMainMenu(sock, from), 1000);
@@ -163,12 +156,8 @@ const handleTermSection = async (sock, from, command, state) => {
     
     if (result.success) {
       await sock.sendMessage(from, { 
-        image: { url: result.data },
-        caption: `${state.selectedTerm} Timetable for ${selectedSection}` 
+        text: `Timetable for ${selectedSection} in ${state.selectedTerm}:\n\n${result.data}\n\n0. Back to Main Menu` 
       });
-      setTimeout(() => {
-        sock.sendMessage(from, { text: "0. Back to Main Menu" });
-      }, 500);
     } else {
       await sock.sendMessage(from, { text: result.message });
       setTimeout(() => sendMainMenu(sock, from), 1000);
@@ -207,11 +196,9 @@ const handleMessage = async (sock, from, messageText) => {
       } else if (command === '4') {
         await sendTermMenu(sock, from,'term_menu');
       }
-      else if (command === '5') { 
-        await sock.sendMessage(from, { 
-        image: { url: "https://sdrive.blr1.cdn.digitaloceanspaces.com/files/c250f754f0a45e0eba1e7ca4e067af02.jpg" },
-        caption: `Term 1 Mid Exam Schedule.` 
-      });
+      else if (command === '5') {
+        const result = await getExamSchedule(); 
+        await sock.sendMessage(from,{"Term 1 Mid Exam Schedule: \n\n":result.data});
       setTimeout(() => {
         sendMainMenu(sock, from);
       }, 500);

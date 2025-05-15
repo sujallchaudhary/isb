@@ -1,4 +1,4 @@
-const { makeWASocket, useMultiFileAuthState } = require('baileys');
+const { makeWASocket, useMultiFileAuthState } = require('@whiskeysockets/baileys');
 const path = require('path');
 const pino = require('pino');
 

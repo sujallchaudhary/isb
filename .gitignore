@@ -2,3 +2,4 @@ cred.json
 node_modules
 temp
 package-lock.json
+auth_info
