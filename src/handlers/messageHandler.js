@@ -197,8 +197,7 @@ const handleMessage = async (sock, from, messageText) => {
         await sendTermMenu(sock, from,'term_menu');
       }
       else if (command === '5') {
-        const result = await getExamSchedule(); 
-        await sock.sendMessage(from,{"Term 1 Mid Exam Schedule: \n\n":result.data});
+        await sock.sendMessage(from,{text:`Term 1 Mid Exam Schedule\n\n17th May | MGEC | 1330-1600\n17th May | SMDM | 1800-2000\n18th May | FADM | 1100-1400\n18th May | LSAT | 1600-1700`});
       setTimeout(() => {
         sendMainMenu(sock, from);
       }, 500);

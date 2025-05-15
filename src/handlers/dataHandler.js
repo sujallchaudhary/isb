@@ -94,7 +94,7 @@ const getSeatingPlan = async (section, subject) => {
   }
 };
 
-const getExamSchedule = async ()=>{
+const getExamSchedule = ()=>{
   const imageUrl = "https://sdrive.blr1.cdn.digitaloceanspaces.com/files/f40c13370969318da4f44e5e74fe568a.jpg";
     return { success: true, data: imageUrl };
 }

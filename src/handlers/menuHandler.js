@@ -12,7 +12,9 @@ const sendMainMenu = async (sock, from) => {
   messageContent += "5. Exam Schedule\n";
   messageContent += "6. Prof Office Location\n";
   messageContent += "7. Tut Timings\n\n";
-  messageContent += "Numeric input like above: 1 or 2 or 3 and so on..🔢";
+  messageContent += "Numeric input like above: 1 or 2 or 3 and so on..🔢\n\n";
+  messageContent += "0 to go back to main menu";
+
 
   await sock.sendMessage(from, { text: messageContent });
   setConversationState(from, { state: 'main_menu' });
@@ -24,7 +26,7 @@ const sendSectionMenu = async (sock, from, nextState, contextData = {}) => {
   for (let i = 0; i < SECTIONS.length; i++) {
     messageContent += `${i + 1}. ${SECTIONS[i]}\n`;
   }
-  messageContent += "\nNumeric input like above: 1 or 2 or 3 and so on..🔢";
+  messageContent += "\nNumeric input like above: 1 or 2 or 3 and so on..🔢\n\n0 to go back to main menu";
 
   await sock.sendMessage(from, { text: messageContent });
   setConversationState(from, { state: nextState, ...contextData });
@@ -36,7 +38,7 @@ const sendTermMenu = async (sock, from,next) => {
   for (let i = 0; i < TERMS.length; i++) {
     messageContent += `${i + 1}. ${TERMS[i]}\n`;
   }
-  messageContent += "\nNumeric input like above: 1 or 2 or 3 and so on..🔢";
+  messageContent += "\nNumeric input like above: 1 or 2 or 3 and so on..🔢\n\n0 to go back to main menu";
 
   await sock.sendMessage(from, { text: messageContent });
   setConversationState(from, { state: next });
