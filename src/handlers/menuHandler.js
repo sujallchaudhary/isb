@@ -12,7 +12,7 @@ const sendMainMenu = async (sock, from) => {
   messageContent += "5. Exam Schedule\n";
   messageContent += "6. Exam Venue\n";
   messageContent += "7. Prof Office Location\n";
-  messageContent += "8. Tut Timings\n\n";
+  messageContent += "8. Sarovar Menu\n\n";
   messageContent += "Numeric input like above: 1 or 2 or 3 and so on..🔢\n\n";
   messageContent += "0 to go back to main menu";
 
@@ -33,7 +33,7 @@ const sendSectionMenu = async (sock, from, nextState, contextData = {}) => {
   setConversationState(from, { state: nextState, ...contextData });
 };
 
-const sendTermMenu = async (sock, from,next) => {
+const sendTermMenu = async (sock, from, next) => {
   let messageContent = "Select your term buddy: 📆\n\n";
   
   for (let i = 0; i < TERMS.length; i++) {
@@ -139,11 +139,43 @@ const sendExamSubjectMenu = async (sock, from) => {
   });
 };
 
+const sendSarovarMealMenu = async (sock, from) => {
+  let messageContent = "Select a meal from Sarovar Menu: 🍽️\n\n";
+  messageContent += "1. Breakfast 🍳\n";
+  messageContent += "2. Lunch 🍛\n";
+  messageContent += "3. Dinner 🍲\n\n";
+  messageContent += "Numeric input like above: 1 or 2 or 3 and so on..🔢\n\n";
+  messageContent += "0. Back to Main Menu";
+
+  await sock.sendMessage(from, { text: messageContent });
+  setConversationState(from, { 
+    state: 'sarovar_meal',
+    mealTypes: ['breakfast', 'lunch', 'dinner']
+  });
+};
+
+const sendSarovarDayMenu = async (sock, from, mealType) => {
+  let messageContent = `Select a day for ${mealType}: 📆\n\n`;
+  messageContent += "1. Today\n";
+  messageContent += "2. Tomorrow\n\n";
+  messageContent += "Numeric input like above: 1 or 2..🔢\n\n";
+  messageContent += "0. Back to Main Menu";
+
+  await sock.sendMessage(from, { text: messageContent });
+  setConversationState(from, { 
+    state: 'sarovar_day',
+    mealType: mealType,
+    dayOptions: ['today', 'tomorrow']
+  });
+};
+
 module.exports = {
   sendMainMenu,
   sendSectionMenu,
   sendTermMenu,
   sendSubjectMenu,
   sendProfMenu,
-  sendExamSubjectMenu
+  sendExamSubjectMenu,
+  sendSarovarMealMenu,
+  sendSarovarDayMenu
 };

@@ -43,6 +43,8 @@ const preloadAllData = async (terms, sections) => {
     for (const term of terms) {
       await extractData(WORKBOOKS.PROF_INFO, term, true);
     }
+    // Preload Sarovar menu data
+    await extractData(WORKBOOKS.SAROVAR_MENU, 'Sheet1', true);
   } catch (error) {
     console.error("Error preloading data:", error);
   }

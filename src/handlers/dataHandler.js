@@ -223,6 +223,89 @@ const getTutorialTimings = async (subject, professor) => {
   }
 };
 
+const getSarovarMenu = async (mealType, day) => {
+  try {
+    const data = await extractData(WORKBOOKS.SAROVAR_MENU, 'Sheet1');
+    if (data.length === 0) {
+      return { success: false, message: 'Menu information not found.' };
+    }
+
+    const headerRow = data[0];
+    const dateIndex = headerRow.findIndex(col => col.toLowerCase() === 'date');
+    const breakfastIndex = headerRow.findIndex(col => col.toLowerCase() === 'breakfast');
+    const lunchIndex = headerRow.findIndex(col => col.toLowerCase() === 'lunch');
+    const dinnerIndex = headerRow.findIndex(col => col.toLowerCase() === 'dinner');
+    
+    if (dateIndex === -1 || breakfastIndex === -1 || lunchIndex === -1 || dinnerIndex === -1) {
+      return { success: false, message: 'Menu information not properly formatted in the sheet.' };
+    }
+    
+    // Get today's and tomorrow's dates in DD-MMM format
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    const formatDate = (date) => {
+      const day = date.getDate();
+      const month = date.toLocaleString('default', { month: 'short' });
+      return `${day}-${month}`;
+    };
+    
+    const todayFormatted = formatDate(today);
+    const tomorrowFormatted = formatDate(tomorrow);
+    
+    // Find the target date based on user selection
+    const targetDate = day === 'today' ? todayFormatted : tomorrowFormatted;
+    
+    // Find rows for the target date
+    let menuItems = [];
+    let currentDate = '';
+    let collectingItems = false;
+    
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      
+      // Check if this is a date row
+      if (row[dateIndex] && row[dateIndex].trim()) {
+        currentDate = row[dateIndex];
+        // Start collecting items if this is our target date
+        collectingItems = currentDate.includes(targetDate);
+      }
+      
+      // If we're collecting items for our target date and this row has meal data
+      if (collectingItems && row.length > 0) {
+        // If we hit an empty row or another date row, stop collecting
+        if (!row[0] && !row[1] && !row[2] && !row[3]) {
+          collectingItems = false;
+        } else {
+          // Add meal item based on requested type
+          let mealItem = null;
+          if (mealType === 'breakfast' && row[breakfastIndex]) {
+            mealItem = row[breakfastIndex];
+          } else if (mealType === 'lunch' && row[lunchIndex]) {
+            mealItem = row[lunchIndex];
+          } else if (mealType === 'dinner' && row[dinnerIndex]) {
+            mealItem = row[dinnerIndex];
+          }
+          
+          if (mealItem) {
+            menuItems.push(mealItem);
+          }
+        }
+      }
+    }
+    
+    if (menuItems.length === 0) {
+      return { success: false, message: `No ${mealType} menu found for ${day} (${targetDate}).` };
+    }
+    
+    return { success: true, data: menuItems };
+  } catch (error) {
+    console.error('Error fetching Sarovar menu:', error);
+    return { success: false, message: 'Error retrieving Sarovar menu information.' };
+  }
+};
+
 module.exports = {
   getVenueInfo,
   getClassTimeInfo,
@@ -231,5 +314,6 @@ module.exports = {
   getOfficeHours,
   getTutorialTimings,
   getExamSchedule,
-  getExamVenue
+  getExamVenue,
+  getSarovarMenu
 };

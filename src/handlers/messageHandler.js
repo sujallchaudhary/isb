@@ -1,7 +1,7 @@
 const { getConversationState, setConversationState } = require('../models/conversation');
 const { SECTIONS, DEFAULT_SUBJECTS, TERMS } = require('../config/constants');
-const {sendMainMenu,sendSectionMenu,sendTermMenu,sendSubjectMenu,sendProfMenu,sendExamSubjectMenu} = require('./menuHandler');
-const {getVenueInfo,getClassTimeInfo,getSeatingPlan,getTermTimetable,getOfficeHours,getTutorialTimings,getExamSchedule,getExamVenue} = require('./dataHandler');
+const {sendMainMenu,sendSectionMenu,sendTermMenu,sendSubjectMenu,sendProfMenu,sendExamSubjectMenu,sendSarovarMealMenu,sendSarovarDayMenu} = require('./menuHandler');
+const {getVenueInfo,getClassTimeInfo,getSeatingPlan,getTermTimetable,getOfficeHours,getTutorialTimings,getExamSchedule,getExamVenue,getSarovarMenu} = require('./dataHandler');
 
 const handleInvalidInput = async (sock, from) => {
   await sock.sendMessage(from, { 
@@ -97,7 +97,6 @@ const handleOfficeProf = async (sock, from, command, state) => {
       await handleInvalidInput(sock, from);
     }
   } 
-  // For the original flow (backward compatibility)
   else {
     const officeProfIndex = parseInt(command) - 1;
     if (officeProfIndex >= 0 && officeProfIndex < state.professors.length) {
@@ -167,6 +166,42 @@ const handleTermSection = async (sock, from, command, state) => {
   }
 };
 
+const handleSarovarMeal = async (sock, from, command, state) => {
+  const mealIndex = parseInt(command) - 1;
+  if (mealIndex >= 0 && mealIndex < state.mealTypes.length) {
+    const selectedMeal = state.mealTypes[mealIndex];
+    await sendSarovarDayMenu(sock, from, selectedMeal);
+  } else if (command === '0') {
+    return sendMainMenu(sock, from);
+  } else {
+    await handleInvalidInput(sock, from);
+  }
+};
+
+const handleSarovarDay = async (sock, from, command, state) => {
+  const dayIndex = parseInt(command) - 1;
+  if (dayIndex >= 0 && dayIndex < state.dayOptions.length) {
+    const selectedDay = state.dayOptions[dayIndex];
+    const result = await getSarovarMenu(state.mealType, selectedDay);
+    
+    if (result.success) {
+      let messageContent = `${state.mealType.charAt(0).toUpperCase() + state.mealType.slice(1)} Menu for ${selectedDay}:\n\n`;
+      result.data.forEach(item => {
+        messageContent += `• ${item}\n`;
+      });
+      messageContent += "\n0. Back to Main Menu";
+      await sock.sendMessage(from, { text: messageContent });
+    } else {
+      await sock.sendMessage(from, { text: result.message });
+      setTimeout(() => sendMainMenu(sock, from), 1000);
+    }
+  } else if (command === '0') {
+    return sendMainMenu(sock, from);
+  } else {
+    await handleInvalidInput(sock, from);
+  }
+};
+
 const handleMessage = async (sock, from, messageText) => {
   const command = messageText.toLowerCase().trim();
   const state = getConversationState(from);
@@ -202,12 +237,10 @@ const handleMessage = async (sock, from, messageText) => {
       }
       else if (command === '6') {
         await sendExamSubjectMenu(sock, from);
-      }
-       else if (command === '7') {
+      }       else if (command === '7') {
         await sendTermMenu(sock, from,'office_term');
       } else if (command === '8') {
-        await sock.sendMessage(from, { text: "No upcoming tut! 🤓\nContact the AA to update tut timings." });
-        setTimeout(() => sendMainMenu(sock, from), 1000);
+        await sendSarovarMealMenu(sock, from);
       } else {
         await handleInvalidInput(sock, from);
       }
@@ -320,6 +353,14 @@ For example 62510300 or 62410659`
           text: "Invalid PGID format. Please enter a numeric PGID like 62510300." 
         });
       }
+      break;
+
+    case 'sarovar_meal':
+      await handleSarovarMeal(sock, from, command, state);
+      break;
+
+    case 'sarovar_day':
+      await handleSarovarDay(sock, from, command, state);
       break;
 
     default:
