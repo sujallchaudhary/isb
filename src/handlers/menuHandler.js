@@ -10,8 +10,9 @@ const sendMainMenu = async (sock, from) => {
   messageContent += "3. Seating Plan for Class\n";
   messageContent += "4. Term Timetable\n";
   messageContent += "5. Exam Schedule\n";
-  messageContent += "6. Prof Office Location\n";
-  messageContent += "7. Tut Timings\n\n";
+  messageContent += "6. Exam Venue\n";
+  messageContent += "7. Prof Office Location\n";
+  messageContent += "8. Tut Timings\n\n";
   messageContent += "Numeric input like above: 1 or 2 or 3 and so on..🔢\n\n";
   messageContent += "0 to go back to main menu";
 
@@ -120,10 +121,29 @@ const sendProfMenu = async (sock, from, subject, nextState) => {
   }
 };
 
+const sendExamSubjectMenu = async (sock, from) => {
+  let messageContent = "When exam venue clicked, enter the exam subject buddy:\n\n";
+  messageContent += "1. MGEC\n";
+  messageContent += "2. SMDM3(G,H,I,J)\n";
+  messageContent += "3. SMDM4(K,L)\n";
+  messageContent += "4. LSAT3(G,I,K,L)\n";
+  messageContent += "5. LSAT4(H,J)\n";
+  messageContent += "6. FADM\n\n";
+  messageContent += "Numeric input like above: 1 or 2 or 3 and so on..🔢\n\n";
+  messageContent += "0. Back to Main Menu";
+
+  await sock.sendMessage(from, { text: messageContent });
+  setConversationState(from, { 
+    state: 'exam_subject',
+    examSubjects: ['MGEC', 'SMDM3(G,H,I,J)', 'SMDM4(K,L)', 'LSAT3(G,I,K,L)','LSAT4(H,J)','FADM']
+  });
+};
+
 module.exports = {
   sendMainMenu,
   sendSectionMenu,
   sendTermMenu,
   sendSubjectMenu,
-  sendProfMenu
+  sendProfMenu,
+  sendExamSubjectMenu
 };

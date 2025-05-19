@@ -1,7 +1,7 @@
-const { getConversationState} = require('../models/conversation');
+const { getConversationState, setConversationState } = require('../models/conversation');
 const { SECTIONS, DEFAULT_SUBJECTS, TERMS } = require('../config/constants');
-const {sendMainMenu,sendSectionMenu,sendTermMenu,sendSubjectMenu,sendProfMenu} = require('./menuHandler');
-const {getVenueInfo,getClassTimeInfo,getSeatingPlan,getTermTimetable,getOfficeHours,getTutorialTimings,getExamSchedule} = require('./dataHandler');
+const {sendMainMenu,sendSectionMenu,sendTermMenu,sendSubjectMenu,sendProfMenu,sendExamSubjectMenu} = require('./menuHandler');
+const {getVenueInfo,getClassTimeInfo,getSeatingPlan,getTermTimetable,getOfficeHours,getTutorialTimings,getExamSchedule,getExamVenue} = require('./dataHandler');
 
 const handleInvalidInput = async (sock, from) => {
   await sock.sendMessage(from, { 
@@ -184,9 +184,7 @@ const handleMessage = async (sock, from, messageText) => {
           text: "Hello! I'm your Mo'Town Buddy 🎓An information assistant! Type 'hi' or 'menu' to get started!" 
         });
       }
-      break;
-
-    case 'main_menu':
+      break;    case 'main_menu':
       if (command === '1') {
         await sendSectionMenu(sock, from, 'where_section');
       } else if (command === '2') {
@@ -202,9 +200,12 @@ const handleMessage = async (sock, from, messageText) => {
         sendMainMenu(sock, from);
       }, 500);
       }
-       else if (command === '6') {
+      else if (command === '6') {
+        await sendExamSubjectMenu(sock, from);
+      }
+       else if (command === '7') {
         await sendTermMenu(sock, from,'office_term');
-      } else if (command === '7') {
+      } else if (command === '8') {
         await sock.sendMessage(from, { text: "No upcoming tut! 🤓\nContact the AA to update tut timings." });
         setTimeout(() => sendMainMenu(sock, from), 1000);
       } else {
@@ -276,10 +277,49 @@ const handleMessage = async (sock, from, messageText) => {
 
     case 'office_prof':
       await handleOfficeProf(sock, from, command, state);
-      break;
-
-    case 'tut_prof':
+      break;    case 'tut_prof':
       await handleTutProf(sock, from, command, state);
+      break;
+      
+    case 'exam_subject':
+      const examSubjectIndex = parseInt(command) - 1;
+      if (examSubjectIndex >= 0 && examSubjectIndex < state.examSubjects.length) {
+        const selectedSubject = state.examSubjects[examSubjectIndex];
+        await sock.sendMessage(from, { 
+          text: `Please type your exact PGID for ${selectedSubject} exam venue: 
+For example 62510300 or 62410659` 
+        });
+        setConversationState(from, { 
+          state: 'exam_pgid', 
+          examSubject: selectedSubject
+        });
+      } else if (command === '0') {
+        return sendMainMenu(sock, from);
+      } else {
+        await handleInvalidInput(sock, from);
+      }
+      break;
+      
+    case 'exam_pgid':
+      // Check if input is a valid PGID (numeric)
+      if (/^\d+$/.test(command)) {
+        const result = await getExamVenue(state.examSubject, command);
+        
+        if (result.success) {
+          await sock.sendMessage(from, { 
+            text: `Venue for ${state.examSubject} exam with PGID ${command}: ${result.data}\n\nAll the best buddy, don't forget your ID card! 👍🎓\n\n0. Back to Main Menu` 
+          });
+        } else {
+          await sock.sendMessage(from, { text: result.message });
+          setTimeout(() => sendMainMenu(sock, from), 1000);
+        }
+      } else if (command === '0') {
+        return sendMainMenu(sock, from);
+      } else {
+        await sock.sendMessage(from, { 
+          text: "Invalid PGID format. Please enter a numeric PGID like 62510300." 
+        });
+      }
       break;
 
     default:

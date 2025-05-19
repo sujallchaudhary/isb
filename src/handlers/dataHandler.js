@@ -99,6 +99,42 @@ const getExamSchedule = ()=>{
     return { success: true, data: imageUrl };
 }
 
+const getExamVenue = async (subject, pgid) => {
+  try {
+    const data = await extractData(WORKBOOKS.EXAM_SCHEDULE, subject);
+    if (data.length === 0) {
+      return { success: false, message: 'Exam venue information not found.' };
+    }
+    
+    const headerRow = data[0];
+    const fromPgidIndex = headerRow.findIndex(col => col.toLowerCase() === 'from_pgid');
+    const toPgidIndex = headerRow.findIndex(col => col.toLowerCase() === 'to_pgid');
+    const venueIndex = headerRow.findIndex(col => col.toLowerCase() === 'venue');
+    
+    if (fromPgidIndex === -1 || toPgidIndex === -1 || venueIndex === -1) {
+      return { success: false, message: 'Exam venue information not properly formatted in the sheet.' };
+    }
+    const pgidNum = parseInt(pgid);
+    if (isNaN(pgidNum)) {
+      return { success: false, message: 'Invalid PGID format. Please enter a numeric PGID.' };
+    }
+    const matchingRow = data.slice(1).find(row => {
+      const fromPgid = parseInt(row[fromPgidIndex]);
+      const toPgid = parseInt(row[toPgidIndex]);
+      return !isNaN(fromPgid) && !isNaN(toPgid) && pgidNum >= fromPgid && pgidNum <= toPgid;
+    });
+    
+    if (matchingRow && matchingRow[venueIndex]) {
+      return { success: true, data: matchingRow[venueIndex] };
+    } else {
+      return { success: false, message: `No venue information found for PGID ${pgid}.` };
+    }
+  } catch (error) {
+    console.error('Error fetching exam venue:', error);
+    return { success: false, message: 'Error retrieving exam venue information.' };
+  }
+}
+
 const getTermTimetable = async (term, section) => {
   try {
     const data = await extractData(WORKBOOKS.TERM_TIMETABLE, term);
@@ -194,5 +230,6 @@ module.exports = {
   getTermTimetable,
   getOfficeHours,
   getTutorialTimings,
-  getExamSchedule
+  getExamSchedule,
+  getExamVenue
 };
