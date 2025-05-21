@@ -14,10 +14,9 @@ const handleWhereSubject = async (sock, from, command, state) => {
   if (whereSubjectIndex >= 0 && whereSubjectIndex < state.subjects.length) {
     const selectedSubject = state.subjects[whereSubjectIndex];
     const result = await getVenueInfo(state.section, selectedSubject);
-    
-    if (result.success) {
+      if (result.success) {
       await sock.sendMessage(from, { 
-        text: `Venue for ${selectedSubject}: ${result.data}\n\n0. Back to Main Menu` 
+        text: `Venue for ${selectedSubject}: ${result.data}\n\n0. Back to Main Menu\n\n> _Created with love | Kashish_` 
       });
     } else {
       await sock.sendMessage(from, { text: result.message });
@@ -36,12 +35,11 @@ const handleWhenSubject = async (sock, from, command, state) => {
     const selectedSubject = state.subjects[whenSubjectIndex];
     const result = await getClassTimeInfo(state.section, selectedSubject);
     
-    if (result.success) {
-      let messageContent = `Class times for ${selectedSubject}:\n\n`;
+    if (result.success) {      let messageContent = `Class times for ${selectedSubject}:\n\n`;
       result.data.forEach(time => {
         messageContent += `- ${time}\n`;
       });
-      messageContent += "\n0. Back to Main Menu";
+      messageContent += "\n0. Back to Main Menu\n\n> _Created with love | Kashish_";
       await sock.sendMessage(from, { text: messageContent });
     } else {
       await sock.sendMessage(from, { text: result.message });
@@ -59,10 +57,9 @@ const handleSeatingSubject = async (sock, from, command, state) => {
   if (seatingSubjectIndex >= 0 && seatingSubjectIndex < state.subjects.length) {
     const selectedSubject = state.subjects[seatingSubjectIndex];
     const result = await getSeatingPlan(state.section, selectedSubject);
-    
-    if (result.success) {
+      if (result.success) {
       await sock.sendMessage(from, { 
-        text: `Seating plan for ${selectedSubject}:\n\n${result.data}\n\n0. Back to Main Menu`
+        text: `Seating plan for ${selectedSubject}:\n\n${result.data}\n\n0. Back to Main Menu\n\n> _Created with love | Kashish_`
       });
     } else {
       await sock.sendMessage(from, { text: result.message });
@@ -75,8 +72,7 @@ const handleSeatingSubject = async (sock, from, command, state) => {
   }
 };
 
-const handleOfficeProf = async (sock, from, command, state) => {
-  // For direct selection from office_term state
+const handleOfficeProf = async (sock, from, command, state) => {  // For direct selection from office_term state
   if (state.state === 'office_prof' && state.selectedTerm) {
     const officeProfIndex = parseInt(command) - 1;
     if (officeProfIndex >= 0 && officeProfIndex < state.professors.length) {
@@ -85,7 +81,7 @@ const handleOfficeProf = async (sock, from, command, state) => {
       
       if (result.success) {
         await sock.sendMessage(from, { 
-          text: `Office Hours for ${selectedProf}: ${result.data}\n\n0. Back to Main Menu` 
+          text: `Office Hours for ${selectedProf}: ${result.data}\n\n0. Back to Main Menu\n\n> _Created with love | Kashish_` 
         });
       } else {
         await sock.sendMessage(from, { text: result.message });
@@ -100,12 +96,11 @@ const handleOfficeProf = async (sock, from, command, state) => {
   else {
     const officeProfIndex = parseInt(command) - 1;
     if (officeProfIndex >= 0 && officeProfIndex < state.professors.length) {
-      const selectedProf = state.professors[officeProfIndex];
-      const result = await getOfficeHours(state.subject, selectedProf);
+      const selectedProf = state.professors[officeProfIndex];      const result = await getOfficeHours(state.subject, selectedProf);
       
       if (result.success) {
         await sock.sendMessage(from, { 
-          text: `Office Hours for ${selectedProf}: ${result.data}\n\n0. Back to Main Menu` 
+          text: `Office Hours for ${selectedProf}: ${result.data}\n\n0. Back to Main Menu\n\n> _Created with love | Kashish_` 
         });
       } else {
         await sock.sendMessage(from, { text: result.message });
@@ -124,10 +119,9 @@ const handleTutProf = async (sock, from, command, state) => {
   if (tutProfIndex >= 0 && tutProfIndex < state.professors.length) {
     const selectedProf = state.professors[tutProfIndex];
     const result = await getTutorialTimings(state.subject, selectedProf);
-    
-    if (result.success) {
+      if (result.success) {
       await sock.sendMessage(from, { 
-        text: `Tutorial Timings for ${selectedProf}: ${result.data}\n\n0. Back to Main Menu` 
+        text: `Tutorial Timings for ${selectedProf}: ${result.data}\n\n0. Back to Main Menu\n\n> _Created with love | Kashish_` 
       });
     } else {
       await sock.sendMessage(from, { text: result.message });
@@ -152,10 +146,9 @@ const handleTermSection = async (sock, from, command, state) => {
     }
     
     const result = await getTermTimetable(state.selectedTerm, selectedSection);
-    
-    if (result.success) {
+      if (result.success) {
       await sock.sendMessage(from, { 
-        text: `Timetable for ${selectedSection} in ${state.selectedTerm}:\n\n${result.data}\n\n0. Back to Main Menu` 
+        text: `Timetable for ${selectedSection} in ${state.selectedTerm}:\n\n${result.data}\n\n0. Back to Main Menu\n\n> _Created with love | Kashish_` 
       });
     } else {
       await sock.sendMessage(from, { text: result.message });
@@ -184,12 +177,11 @@ const handleSarovarDay = async (sock, from, command, state) => {
     const selectedDay = state.dayOptions[dayIndex];
     const result = await getSarovarMenu(state.mealType, selectedDay);
     
-    if (result.success) {
-      let messageContent = `${state.mealType.charAt(0).toUpperCase() + state.mealType.slice(1)} Menu for ${selectedDay}:\n\n`;
+    if (result.success) {      let messageContent = `${state.mealType.charAt(0).toUpperCase() + state.mealType.slice(1)} Menu for ${selectedDay}:\n\n`;
       result.data.forEach(item => {
         messageContent += `• ${item}\n`;
       });
-      messageContent += "\n0. Back to Main Menu";
+      messageContent += "\n0. Back to Main Menu\n\n> _Created with love | Kashish_";
       await sock.sendMessage(from, { text: messageContent });
     } else {
       await sock.sendMessage(from, { text: result.message });
@@ -228,9 +220,8 @@ const handleMessage = async (sock, from, messageText) => {
         await sendSectionMenu(sock, from, 'seating_section');
       } else if (command === '4') {
         await sendTermMenu(sock, from,'term_menu');
-      }
-      else if (command === '5') {
-        await sock.sendMessage(from,{text:`Term 1 Mid Exam Schedule\n\n17th May | MGEC | 1330-1600\n17th May | SMDM | 1800-2000\n18th May | FADM | 1100-1400\n18th May | LSAT | 1600-1700`});
+      }      else if (command === '5') {
+        await sock.sendMessage(from,{text:`Term 1 Mid Exam Schedule\n\n26th May | MGEC | 0900-1200\n26th May | LSAT | 1400-1600\n27th May | FADM | 0900-1200\n27th May | SMDM | 1400-1600\n\n> _Created with love | Kashish_`});
       setTimeout(() => {
         sendMainMenu(sock, from);
       }, 500);
@@ -337,10 +328,9 @@ For example 62510300 or 62410659`
       // Check if input is a valid PGID (numeric)
       if (/^\d+$/.test(command)) {
         const result = await getExamVenue(state.examSubject, command);
-        
-        if (result.success) {
+          if (result.success) {
           await sock.sendMessage(from, { 
-            text: `Venue for ${state.examSubject} exam with PGID ${command}: ${result.data}\n\nAll the best buddy, don't forget your ID card! 👍🎓\n\n0. Back to Main Menu` 
+            text: `Venue for ${state.examSubject} exam with PGID ${command}: ${result.data}\n\nAll the best buddy, don't forget your ID card! 👍🎓\n\n0. Back to Main Menu\n\n> _Created with love | Kashish_` 
           });
         } else {
           await sock.sendMessage(from, { text: result.message });
